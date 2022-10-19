@@ -1,0 +1,134 @@
+buildscript {
+    repositories {
+        maven {
+            url "./offline-repository"
+        }
+        maven {
+            url "http://maven.aliyun.com/nexus/content/groups/public"
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.4.4")
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.10.RELEASE"
+        classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
+        classpath 'gradle.plugin.io.pry.gradle.offline_dependencies:gradle-offline-dependencies-plugin:0.5.0'
+    }
+}
+
+plugins {
+    id 'com.zeroc.gradle.ice-builder.slice' version '1.4.7' apply false
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'war'
+apply plugin: 'com.zeroc.gradle.ice-builder.slice'
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: 'io.pry.gradle.offline_dependencies'
+
+repositories {
+    maven {
+        url "./offline-repository"
+    }
+}
+
+configurations {
+    providedRuntime
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+offlineDependencies {
+    repositories {
+        maven {
+            url "http://maven.aliyun.com/nexus/content/groups/public"
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenCentral()
+    }
+}
+
+dependencyManagement {
+    imports {
+//        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2020.0.2"
+//        mavenBom "com.github.leeonky:java-TD-tools-dependencies:0.0.2"
+    }
+}
+
+ext {
+    set('springCloudVersion', "2020.0.2")
+    set('springCloudStarterOpenfeign', '3.0.2')
+    set('springBoot', '2.4.4')
+}
+
+dependencies {
+    implementation group: 'org.junit', name: 'junit-bom', version: '5.7.0', ext: 'pom'
+    annotationProcessor('org.projectlombok:lombok:1.18.18')
+    implementation 'com.zeroc:ice:3.7.2'
+    implementation group: 'org.mockito', name: 'mockito-core', version: '4.4.0'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: springCloudStarterOpenfeign
+    implementation('org.projectlombok:lombok:1.18.18')
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBoot}")
+    implementation("org.springframework.boot:spring-boot-starter-test:${springBoot}")
+    implementation("mysql:mysql-connector-java:8.0.13")
+    implementation("io.cucumber:cucumber-java:6.10.2")
+    implementation("io.cucumber:cucumber-spring:6.10.2")
+    implementation("org.assertj:assertj-core:3.19.0")
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
+    implementation group: 'io.appium', name: 'java-client', version: '7.6.0'
+    implementation group: 'com.github.2gis.winium', name: 'winium-webdriver', version: '0.1.0-1'
+    implementation group: 'com.github.2gis.winium', name: 'winium-elements-desktop', version: '0.2.0-1'
+    implementation "org.awaitility:awaitility:4.0.3"
+    implementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.0'
+    implementation("org.mock-server:mockserver-netty:5.13.2")
+    implementation("org.mock-server:mockserver-client-java:5.13.2")
+    implementation "com.github.leeonky:jfactory:0.3.18"
+    implementation "com.github.leeonky:jfactory-cucumber:0.1.21"
+    implementation "com.github.leeonky:DAL-java:0.3.12"
+    implementation "com.github.leeonky:DAL-extension-basic:0.0.8"
+    implementation "org.reflections:reflections:0.9.12"
+    implementation group: 'com.jcraft', name: 'jsch', version: '0.1.55'
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.13.4'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.4'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.4'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.13.4'
+    implementation group: 'org.xmlunit', name: 'xmlunit-core', version: '2.9.0'
+    implementation group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.9.0'
+}
+
+task cucumber(type: JavaExec) {
+    dependsOn assemble, testClasses
+    main = "io.cucumber.core.cli.Main"
+    classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+    environment "SPRING_PROFILES_ACTIVE", "test"
+    args = ['--plugin', 'pretty',
+            '--glue', 'com.odde.atddv2',
+            '--glue', 'com.github.leeonky.jfactory.cucumber',
+            'src/test/resources']
+}
+
+tasks.bootWar { enabled = false }
+
+slice {
+    java {
+        files = [file("./Printer.ice")]
+    }
+}
+
+//import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+//
+//task testJar(type: ShadowJar) {
+//    archiveClassifier.set("tests")
+//    from sourceSets.main.output
+//    project.configurations.testImplementation.canBeResolved = true
+//    configurations = [project.configurations.testImplementation]
+//}
+
