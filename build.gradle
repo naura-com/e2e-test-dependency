@@ -95,6 +95,8 @@ dependencies {
     implementation "com.github.leeonky:jfactory-cucumber:0.1.21"
     implementation "com.github.leeonky:DAL-java:0.3.12"
     implementation "com.github.leeonky:DAL-extension-basic:0.0.8"
+    implementation "com.github.leeonky:jfactory-repo-jpa:0.1.12"
+    implementation "com.github.leeonky:jfactory-property-value:0.0.10"
     implementation "org.reflections:reflections:0.9.12"
     implementation group: 'com.jcraft', name: 'jsch', version: '0.1.55'
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.13.4'
