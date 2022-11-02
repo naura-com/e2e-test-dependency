@@ -105,6 +105,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.13.4'
     implementation group: 'org.xmlunit', name: 'xmlunit-core', version: '2.9.0'
     implementation group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.9.0'
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
 }
 
 task cucumber(type: JavaExec) {
