@@ -106,6 +106,8 @@ dependencies {
     implementation group: 'org.xmlunit', name: 'xmlunit-core', version: '2.9.0'
     implementation group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.9.0'
     implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
+
+    implementation group: 'com.github.kilianB', name: 'JImageHash', version: '3.0.0'
 }
 
 task cucumber(type: JavaExec) {
