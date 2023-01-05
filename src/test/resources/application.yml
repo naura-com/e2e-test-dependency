@@ -1,0 +1,73 @@
+spring:
+  datasource:
+    url: jdbc:mysql://192.168.56.64:3306/scope?autoReconnect=true&createDatabaseIfNotExist=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 8888
+    testOnBorrow: true
+    testOnReturn: true
+    testWhileIdle: true
+    validationQuery: SELECT 1
+    timeBetweenEvictionRunsMillis: 3600000
+    driver-class: com.mysql.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        default_catalog: scope
+        dialect: org.hibernate.dialect.MySQL5Dialect
+
+logging.level.org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+
+mock-server:
+  endpoint: http://mock-server.tool.net:9081
+
+binstd-endpoint:
+  key: test
+
+standalone-dev-endpoint:
+  url: http://mock-server.tool.net:9081
+
+app:
+  path: 'Z:\pvd\bin\Debug'
+  local-path: 'c:\test\pvd\bin\Debug'
+  name: 'GUI.exe'
+  path1: 'Z:\etch1\Debug'
+  local-path1: 'c:\test\etch1\Debug'
+  name1: 'CTC.exe'
+  driver:
+    host: 'http://192.168.56.10:4723/wd/hub'
+
+mock-lower:
+  pvd:
+    host: 192.168.56.1
+    port: 10000
+
+lower:
+  pvd:
+    host: 192.168.56.46
+    port: 20000
+  etch1:
+    pm2:
+      host: 192.168.56.64
+      port: 20011
+    ref:
+      host: 192.168.56.64
+      port: 20010
+
+filedir:
+  local: 'c:\test\testFiles'
+  virtual: 'Z:\testFiles'
+  lower: '/root/lower/pvd_mec_300_std'
+  lower1: '/root/6958'
+
+waferflowfiledir:
+  local: 'c:\test\etch1\Debug\data\waferflow'
+  virtual: 'Z:\etch1\Debug\data\waferflow'
+
+alarmfiledir:
+  local: 'c:\test\etch1\Debug\data\alarminfo'
+  virtual: 'Z:\etch1\Debug\data\alarminfo'

@@ -45,13 +45,13 @@ configurations {
 
 offlineDependencies {
     repositories {
+        mavenCentral()
         maven {
             url "http://maven.aliyun.com/nexus/content/groups/public"
         }
         maven {
             url "https://plugins.gradle.org/m2/"
         }
-        mavenCentral()
     }
 }
 
@@ -106,8 +106,8 @@ dependencies {
     implementation group: 'org.xmlunit', name: 'xmlunit-core', version: '2.9.0'
     implementation group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.9.0'
     implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
-
     implementation group: 'com.github.kilianB', name: 'JImageHash', version: '3.0.0'
+    implementation files('libs/Ice.jar')
 }
 
 task cucumber(type: JavaExec) {
