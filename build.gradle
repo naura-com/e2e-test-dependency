@@ -135,19 +135,19 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2'
     implementation 'org.apache.httpcomponents:httpcore:4.4.13'
 
-    testRuntime 'com.google.code.gson:gson:2.8.8'
-    testRuntime 'com.sun.activation:jakarta.activation:1.2.2' // added
+    testImplementation 'com.google.code.gson:gson:2.8.8'
+    testImplementation 'com.sun.activation:jakarta.activation:1.2.2' // added
 
 }
 
 task cucumber(type: JavaExec) {
-    dependsOn assemble, testClasses
+    dependsOn test
     main = "io.cucumber.core.cli.Main"
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
     environment "SPRING_PROFILES_ACTIVE", "test"
     args = ['--plugin', 'pretty',
-            '--glue', 'com.odde.atddv2',
-            '--glue', 'com.github.leeonky.jfactory.cucumber',
+            '--glue', 'com.naura',
+            '--glue', 'com.github.leeonky',
             'src/test/resources']
 }
 
