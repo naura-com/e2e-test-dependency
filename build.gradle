@@ -11,7 +11,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.4.4")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.4.3")
         classpath "io.spring.gradle:dependency-management-plugin:1.0.10.RELEASE"
         classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
         classpath 'gradle.plugin.io.pry.gradle.offline_dependencies:gradle-offline-dependencies-plugin:0.5.0'
@@ -34,6 +34,7 @@ repositories {
     maven {
         url "./offline-repository"
     }
+//    mavenCentral()
 }
 
 configurations {
@@ -65,12 +66,13 @@ dependencyManagement {
 ext {
     set('springCloudVersion', "2020.0.2")
     set('springCloudStarterOpenfeign', '3.0.2')
-    set('springBoot', '2.4.4')
+    set('springBoot', '2.4.3')
 }
 
 dependencies {
     implementation group: 'org.junit', name: 'junit-bom', version: '5.7.0', ext: 'pom'
     annotationProcessor('org.projectlombok:lombok:1.18.18')
+    testAnnotationProcessor('org.projectlombok:lombok:1.18.18')
     implementation 'com.zeroc:ice:3.7.2'
     implementation group: 'org.mockito', name: 'mockito-core', version: '4.4.0'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: springCloudStarterOpenfeign
@@ -108,6 +110,34 @@ dependencies {
     implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
     implementation group: 'com.github.kilianB', name: 'JImageHash', version: '3.0.0'
     implementation files('libs/Ice.jar')
+
+    // dependencies for gradlew build
+    implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.12.8'
+    implementation group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.12.8'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.30'
+    implementation 'io.netty:netty-buffer:4.1.75.Final'
+    implementation 'io.netty:netty-codec:4.1.75.Final'
+    implementation 'io.netty:netty-codec-http:4.1.75.Final'
+    implementation 'io.netty:netty-common:4.1.75.Final'
+    implementation 'io.netty:netty-handler:4.1.75.Final'
+    implementation 'io.netty:netty-transport:4.1.75.Final'
+    implementation 'io.netty:netty-tcnative-boringssl-static:2.0.51.Final'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'io.netty:netty-resolver:4.1.75.Final'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+    implementation 'org.glassfish.jaxb:txw2:2.3.1'
+    implementation 'javax.activation:javax.activation-api:1.2.0' // added
+    implementation 'io.netty:netty-codec-socks:4.1.75.Final'
+    implementation 'io.netty:netty-handler-proxy:4.1.75.Final'
+    implementation 'com.nimbusds:nimbus-jose-jwt:8.20.2' // added
+    implementation 'org.xmlunit:xmlunit-placeholders:2.9.0'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2'
+    implementation 'org.apache.httpcomponents:httpcore:4.4.13'
+
+    testRuntime 'com.google.code.gson:gson:2.8.8'
+    testRuntime 'com.sun.activation:jakarta.activation:1.2.2' // added
+
 }
 
 task cucumber(type: JavaExec) {
