@@ -1,0 +1,33 @@
+version: '3.4'
+
+services:
+  mysql:
+    #    image: mysql:5.7.36
+    image: mysql/mysql-server:8.0
+    container_name: mysql.test.atdd
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: scope
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "${MYSQL_PORT_OUT}:3306"
+    volumes:
+      - "./mysql/conf:/etc/mysql/conf.d"
+      - "mysql_data:/var/lib/mysql"
+      - "./mysql/conf/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql:ro"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin.test.atdd
+    links:
+      - mysql:db
+    ports:
+      - "${PHPMYADMIN_PORT_OUT}:80"
+
+volumes:
+  mysql_data:
