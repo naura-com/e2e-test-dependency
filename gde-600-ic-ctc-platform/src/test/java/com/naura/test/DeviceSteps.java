@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.io.*;
 import java.net.Socket;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.github.leeonky.dal.Assertions.expect;
 
@@ -22,32 +23,24 @@ public class DeviceSteps {
         table.asMaps().forEach(command -> dnscanWrite(devName, command));
     }
 
-    @SneakyThrows
-    private void dnscanWrite(String devName, Map<String, String> command) {
-        try (Socket socket = new Socket(lowerIp, 50000)) {
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            writeLine(bufferedWriter, "dnscan");
-            writeLine(bufferedWriter, devName);
-            writeLine(bufferedWriter, command.get("mac"));
-            writeLine(bufferedWriter, "write");
-            writeLine(bufferedWriter, command.get("channel"));
-            writeLine(bufferedWriter, command.get("data"));
-            bufferedWriter.flush();
-        }
-    }
-
-    private void writeLine(BufferedWriter bufferedWriter, String str) throws IOException {
-        bufferedWriter.write(str);
-        bufferedWriter.write("\n");
-    }
-
-    private String readLine(BufferedReader bufferedReader) throws IOException {
-        return bufferedReader.readLine();
-    }
-
     @那么("dnscan设备{string}状态应为:")
     public void dnscan设备状态应为(String devName, DataTable table) {
         table.asMaps().forEach(command -> dnscanVerify(devName, command));
+    }
+
+    @SneakyThrows
+    @那么("串口设备{string}写入所有数据中应包含{string}")
+    public void 串口设备写入所有数据中应包含(String device, String buffer) {
+        try (Socket socket = new Socket(lowerIp, 50000)) {
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            writeLine(bufferedWriter, "serialPort");
+            writeLine(bufferedWriter, device);
+            writeLine(bufferedWriter, "readAll");
+            bufferedWriter.flush();
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            expect(bufferedReader.lines().collect(Collectors.toList())).should(String.format(": [... '%s' ...]", buffer));
+        }
     }
 
     @SneakyThrows
@@ -64,5 +57,28 @@ public class DeviceSteps {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             expect(bufferedReader.readLine()).exact(command.get("data"));
         }
+    }
+
+    @SneakyThrows
+    private void dnscanWrite(String devName, Map<String, String> command) {
+        try (Socket socket = new Socket(lowerIp, 50000)) {
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            writeLine(bufferedWriter, "dnscan");
+            writeLine(bufferedWriter, devName);
+            writeLine(bufferedWriter, command.get("mac"));
+            writeLine(bufferedWriter, "write");
+            writeLine(bufferedWriter, command.get("channel"));
+            writeLine(bufferedWriter, command.get("data"));
+            bufferedWriter.flush();
+        }
+    }
+
+    private String readLine(BufferedReader bufferedReader) throws IOException {
+        return bufferedReader.readLine();
+    }
+
+    private void writeLine(BufferedWriter bufferedWriter, String str) throws IOException {
+        bufferedWriter.write(str);
+        bufferedWriter.write("\n");
     }
 }
