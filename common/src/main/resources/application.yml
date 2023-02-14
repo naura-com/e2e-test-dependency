@@ -1,14 +1,14 @@
 spring:
   datasource:
-    url: jdbc:mysql://192.168.56.64:3306/scope?autoReconnect=true&createDatabaseIfNotExist=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: 8888
+    url: jdbc:mysql://localhost:23306/scope?autoReconnect=true&createDatabaseIfNotExist=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: admin
+    password: 123456
     testOnBorrow: true
     testOnReturn: true
     testWhileIdle: true
     validationQuery: SELECT 1
     timeBetweenEvictionRunsMillis: 3600000
-    driver-class: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: none
@@ -52,7 +52,7 @@ lower:
     port: 20000
   etch1:
     pm2:
-      host: 192.168.56.64
+      host: localhost
       port: 20011
     ref:
       host: 192.168.56.64
