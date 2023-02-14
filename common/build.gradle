@@ -1,0 +1,46 @@
+ext {
+    set('springCloudVersion', "2020.0.2")
+    set('springCloudStarterOpenfeign', '3.0.2')
+    set('springBoot', '2.4.4')
+}
+
+dependencies {
+    compile files('../libs/Ice.jar')
+    compile group: 'org.mockito', name: 'mockito-core', version: '4.4.0'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: springCloudStarterOpenfeign
+    compile('org.projectlombok:lombok:1.18.18')
+    compile("com.squareup.okhttp3:okhttp:4.9.0")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa:${springBoot}")
+    compile("org.springframework.boot:spring-boot-starter-test:${springBoot}")
+    compile("mysql:mysql-connector-java:8.0.13")
+    compile("io.cucumber:cucumber-java:6.10.2")
+    compile("io.cucumber:cucumber-spring:6.10.2")
+    compile("org.assertj:assertj-core:3.19.0")
+    compile("javax.xml.bind:jaxb-api:2.3.0")
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
+    compile group: 'io.appium', name: 'java-client', version: '7.6.0'
+    compile group: 'com.github.2gis.winium', name: 'winium-webdriver', version: '0.1.0-1'
+    compile group: 'com.github.2gis.winium', name: 'winium-elements-desktop', version: '0.2.0-1'
+    compile "org.awaitility:awaitility:4.0.3"
+    compile group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.0'
+    compile("org.mock-server:mockserver-netty:5.13.2")
+    compile("org.mock-server:mockserver-client-java:5.13.2")
+    compile "com.github.leeonky:jfactory:0.3.18"
+    compile "com.github.leeonky:jfactory-cucumber:0.1.21"
+    compile "com.github.leeonky:DAL-java:0.3.12"
+    compile "com.github.leeonky:DAL-extension-basic:0.0.8"
+    compile "com.github.leeonky:jfactory-repo-jpa:0.1.12"
+    compile "org.reflections:reflections:0.9.12"
+    compile group: 'com.jcraft', name: 'jsch', version: '0.1.55'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.13.4'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.4'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.4'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.13.4'
+    compile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.9.0'
+    compile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.9.0'
+    compile group: 'com.github.kilianB', name: 'JImageHash', version: '3.0.0'
+
+    annotationProcessor('org.projectlombok:lombok:1.18.4')
+    compile('org.projectlombok:lombok:1.18.4')
+}
+

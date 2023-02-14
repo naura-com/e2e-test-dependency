@@ -1,170 +1,80 @@
 buildscript {
     repositories {
         maven {
-            url "./offline-repository"
-        }
-        maven {
-            url "http://maven.aliyun.com/nexus/content/groups/public"
-        }
-        maven {
-            url "https://plugins.gradle.org/m2/"
+            url './offline-repository'
         }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.4.3")
-        classpath "io.spring.gradle:dependency-management-plugin:1.0.10.RELEASE"
-        classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
-        classpath 'gradle.plugin.io.pry.gradle.offline_dependencies:gradle-offline-dependencies-plugin:0.5.0'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.4.4")
     }
 }
 
-plugins {
-    id 'com.zeroc.gradle.ice-builder.slice' version '1.4.7' apply false
-}
+subprojects { subProject ->
+    apply plugin: 'java'
 
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'java'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'war'
-apply plugin: 'com.zeroc.gradle.ice-builder.slice'
-apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: 'io.pry.gradle.offline_dependencies'
-
-repositories {
-    maven {
-        url "./offline-repository"
+    compileJava {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
-//    mavenCentral()
-}
 
-configurations {
-    providedRuntime
-    cucumberRuntime {
-        extendsFrom testImplementation
-    }
-}
+    group 'org.example'
+    version '1.0-SNAPSHOT'
 
-offlineDependencies {
     repositories {
-        mavenCentral()
         maven {
-            url "http://maven.aliyun.com/nexus/content/groups/public"
-        }
-        maven {
-            url "https://plugins.gradle.org/m2/"
+            url '../offline-repository'
         }
     }
-}
 
-dependencyManagement {
-    imports {
-//        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2020.0.2"
-//        mavenBom "com.github.leeonky:java-TD-tools-dependencies:0.0.2"
+    if (subProject.name != 'common') {
+        configurations {
+            providedRuntime
+            cucumberRuntime {
+                extendsFrom testImplementation
+            }
+        }
+
+        dependencies {
+            implementation project(':common')
+            testAnnotationProcessor('org.projectlombok:lombok:1.18.4')
+        }
+
+//    Fix long file name issue in windows
+        task buildCucumberManiest(type: Jar) {
+            dependsOn configurations.cucumberRuntime
+            appendix = 'pathing'
+            doFirst {
+                manifest {
+                    attributes "Class-Path": configurations.cucumberRuntime.files.collect {
+                        it.toURL().toString().replaceFirst(/file:\/+/, '/')
+                    }.join(' ')
+                }
+            }
+        }
+
+        task cucumber(type: JavaExec) {
+            dependsOn assemble, testClasses, buildCucumberManiest
+            main = "io.cucumber.core.cli.Main"
+            classpath = sourceSets.main.output + sourceSets.test.output + files(buildCucumberManiest.archivePath)
+            jvmArgs "-Dfile.encoding=UTF-8"
+            args = ['--plugin', 'pretty',
+                    '--glue', 'com.naura.test',
+                    '--glue', 'com.github.leeonky',
+                    '--tags', 'not @skip',
+//                    '--dry-run',
+                    'src/test/resources']
+        }
+
+        tasks.withType(JavaCompile) {
+            options.encoding = 'UTF-8'
+        }
+
+        tasks.withType(Test) {
+            systemProperty("file.encoding", "UTF-8")
+        }
+
+        tasks.withType(Javadoc) {
+            options.encoding = 'UTF-8'
+        }
     }
 }
-
-ext {
-    set('springCloudVersion', "2020.0.2")
-    set('springCloudStarterOpenfeign', '3.0.2')
-    set('springBoot', '2.4.3')
-}
-
-dependencies {
-    implementation group: 'org.junit', name: 'junit-bom', version: '5.7.0', ext: 'pom'
-    annotationProcessor('org.projectlombok:lombok:1.18.18')
-    testAnnotationProcessor('org.projectlombok:lombok:1.18.18')
-    implementation 'com.zeroc:ice:3.7.2'
-    implementation group: 'org.mockito', name: 'mockito-core', version: '4.4.0'
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: springCloudStarterOpenfeign
-    implementation('org.projectlombok:lombok:1.18.18')
-    implementation("com.squareup.okhttp3:okhttp:4.9.0")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBoot}")
-    implementation("org.springframework.boot:spring-boot-starter-test:${springBoot}")
-    implementation("mysql:mysql-connector-java:8.0.13")
-    implementation 'mysql:mysql-connector-java:5.1.48'
-    implementation("io.cucumber:cucumber-java:6.10.2")
-    implementation("io.cucumber:cucumber-spring:6.10.2")
-    implementation("org.assertj:assertj-core:3.19.0")
-    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
-    implementation group: 'io.appium', name: 'java-client', version: '7.6.0'
-    implementation group: 'com.github.2gis.winium', name: 'winium-webdriver', version: '0.1.0-1'
-    implementation group: 'com.github.2gis.winium', name: 'winium-elements-desktop', version: '0.2.0-1'
-    implementation "org.awaitility:awaitility:4.0.3"
-    implementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.0'
-    implementation("org.mock-server:mockserver-netty:5.13.2")
-    implementation("org.mock-server:mockserver-client-java:5.13.2")
-    implementation "com.github.leeonky:jfactory:0.3.18"
-    implementation "com.github.leeonky:jfactory-cucumber:0.1.21"
-    implementation "com.github.leeonky:DAL-java:0.3.12"
-    implementation "com.github.leeonky:DAL-extension-basic:0.0.8"
-    implementation "com.github.leeonky:jfactory-repo-jpa:0.1.12"
-    implementation "com.github.leeonky:jfactory-property-value:0.0.10"
-    implementation "org.reflections:reflections:0.9.12"
-    implementation group: 'com.jcraft', name: 'jsch', version: '0.1.55'
-    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.13.4'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.4'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.4'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.13.4'
-    implementation group: 'org.xmlunit', name: 'xmlunit-core', version: '2.9.0'
-    implementation group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.9.0'
-    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
-    implementation group: 'com.github.kilianB', name: 'JImageHash', version: '3.0.0'
-    implementation files('libs/Ice.jar')
-
-    // dependencies for gradlew build
-    implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.12.8'
-    implementation group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.12.8'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.30'
-    implementation 'io.netty:netty-buffer:4.1.75.Final'
-    implementation 'io.netty:netty-codec:4.1.75.Final'
-    implementation 'io.netty:netty-codec-http:4.1.75.Final'
-    implementation 'io.netty:netty-common:4.1.75.Final'
-    implementation 'io.netty:netty-handler:4.1.75.Final'
-    implementation 'io.netty:netty-transport:4.1.75.Final'
-    implementation 'io.netty:netty-tcnative-boringssl-static:2.0.51.Final'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'io.netty:netty-resolver:4.1.75.Final'
-    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
-    implementation 'org.glassfish.jaxb:txw2:2.3.1'
-    implementation 'javax.activation:javax.activation-api:1.2.0' // added
-    implementation 'io.netty:netty-codec-socks:4.1.75.Final'
-    implementation 'io.netty:netty-handler-proxy:4.1.75.Final'
-    implementation 'com.nimbusds:nimbus-jose-jwt:8.20.2' // added
-    implementation 'org.xmlunit:xmlunit-placeholders:2.9.0'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.2'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2'
-    implementation 'org.apache.httpcomponents:httpcore:4.4.13'
-
-    testImplementation 'com.google.code.gson:gson:2.8.8'
-    testImplementation 'com.sun.activation:jakarta.activation:1.2.2' // added
-
-}
-
-task cucumber(type: JavaExec) {
-    dependsOn test
-    main = "io.cucumber.core.cli.Main"
-    classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
-    environment "SPRING_PROFILES_ACTIVE", "test"
-    args = ['--plugin', 'pretty',
-            '--glue', 'com.naura',
-            '--glue', 'com.github.leeonky',
-            'src/test/resources']
-}
-
-tasks.bootWar { enabled = false }
-
-slice {
-    java {
-        files = [file("./Printer.ice")]
-    }
-}
-
-//import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-//
-//task testJar(type: ShadowJar) {
-//    archiveClassifier.set("tests")
-//    from sourceSets.main.output
-//    project.configurations.testImplementation.canBeResolved = true
-//    configurations = [project.configurations.testImplementation]
-//}
-

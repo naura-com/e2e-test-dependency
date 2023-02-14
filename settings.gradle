@@ -1,0 +1,8 @@
+rootProject.name = 'naura'
+
+include(
+        'common',
+        'gde-600-ic-ctc-platform',
+        'pvd-scope-300-std',
+        'project-skeleton'
+)
