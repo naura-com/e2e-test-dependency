@@ -7,7 +7,9 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -30,7 +32,7 @@ public class DeviceSteps {
 
     @SneakyThrows
     @那么("串口设备{string}写入所有数据中应包含{string}")
-    public void 串口设备写入所有数据中应包含(String device, String buffer) {
+    public void 串口设备写入所有数据中应包含字符串(String device, String str) {
         try (Socket socket = new Socket(lowerIp, 50000)) {
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             writeLine(bufferedWriter, "serialPort");
@@ -39,7 +41,26 @@ public class DeviceSteps {
             bufferedWriter.flush();
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            expect(bufferedReader.lines().collect(Collectors.toList())).should(String.format(": [... '%s' ...]", buffer));
+            expect(bufferedReader.lines().collect(Collectors.toList())).should(String.format(": [... '%s' ...]", toHex(str)));
+        }
+    }
+
+    public String toHex(String arg) {
+        return String.format("%x", new BigInteger(1, arg.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @SneakyThrows
+    @那么("串口设备{string}写入所有数据中应包含hex串{string}")
+    public void 串口设备写入所有数据中应包含hex串(String device, String hex) {
+        try (Socket socket = new Socket(lowerIp, 50000)) {
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            writeLine(bufferedWriter, "serialPort");
+            writeLine(bufferedWriter, device);
+            writeLine(bufferedWriter, "readAll");
+            bufferedWriter.flush();
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            expect(bufferedReader.lines().collect(Collectors.toList())).should(String.format(": [... '%s' ...]", hex));
         }
     }
 
