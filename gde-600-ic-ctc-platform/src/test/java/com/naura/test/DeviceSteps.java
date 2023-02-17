@@ -31,18 +31,9 @@ public class DeviceSteps {
     }
 
     @SneakyThrows
-    @那么("串口设备{string}写入所有数据中应包含{string}")
+    @那么("串口设备{string}写入所有数据中应包含字符串{string}")
     public void 串口设备写入所有数据中应包含字符串(String device, String str) {
-        try (Socket socket = new Socket(lowerIp, 50000)) {
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            writeLine(bufferedWriter, "serialPort");
-            writeLine(bufferedWriter, device);
-            writeLine(bufferedWriter, "readAll");
-            bufferedWriter.flush();
-
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            expect(bufferedReader.lines().collect(Collectors.toList())).should(String.format(": [... '%s' ...]", toHex(str)));
-        }
+        serialPortVerify(device, toHex(str));
     }
 
     public String toHex(String arg) {
@@ -52,16 +43,7 @@ public class DeviceSteps {
     @SneakyThrows
     @那么("串口设备{string}写入所有数据中应包含hex串{string}")
     public void 串口设备写入所有数据中应包含hex串(String device, String hex) {
-        try (Socket socket = new Socket(lowerIp, 50000)) {
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            writeLine(bufferedWriter, "serialPort");
-            writeLine(bufferedWriter, device);
-            writeLine(bufferedWriter, "readAll");
-            bufferedWriter.flush();
-
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            expect(bufferedReader.lines().collect(Collectors.toList())).should(String.format(": [... '%s' ...]", hex));
-        }
+        serialPortVerify(device, hex);
     }
 
     @SneakyThrows
@@ -96,6 +78,19 @@ public class DeviceSteps {
 
     private String readLine(BufferedReader bufferedReader) throws IOException {
         return bufferedReader.readLine();
+    }
+
+    private void serialPortVerify(String device, String hex) throws IOException {
+        try (Socket socket = new Socket(lowerIp, 50000)) {
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            writeLine(bufferedWriter, "serialPort");
+            writeLine(bufferedWriter, device);
+            writeLine(bufferedWriter, "readAll");
+            bufferedWriter.flush();
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            expect(bufferedReader.lines().collect(Collectors.toList())).should(String.format(": [... '%s' ...]", hex));
+        }
     }
 
     private void writeLine(BufferedWriter bufferedWriter, String str) throws IOException {
