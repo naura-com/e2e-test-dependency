@@ -28,3 +28,21 @@
   场景: Verify下位机设置温度 - 串口hex串step
 #    当设置IO"/IO/Chiller/TempSP"状态为"50"
     那么串口设备"/dev/tty"写入所有数据中应包含hex串"776f726c64"
+
+  场景: Given下位机温度 - 串口字符串step
+    假如串口设备"/dev/tty"设置的读取数据为字符串"hello"
+#    那么IO状态为:
+#    """
+#    remoteData: {
+#      '/IO/Chiller/TempSensor'.value.value: 1.3
+#    }
+#    """
+
+  场景: Given下位机温度 - 串口hex串step
+    假如串口设备"/dev/tty"设置的读取数据为hex串"0102"
+#    那么IO状态为:
+#    """
+#    remoteData: {
+#      '/IO/Chiller/TempSensor'.value.value: 1.3
+#    }
+#    """

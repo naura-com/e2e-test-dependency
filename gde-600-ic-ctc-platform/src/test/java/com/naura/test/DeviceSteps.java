@@ -47,6 +47,18 @@ public class DeviceSteps {
     }
 
     @SneakyThrows
+    @假如("串口设备{string}设置的读取数据为字符串{string}")
+    public void 串口设备设置的读取数据为字符串(String device, String str) {
+        serialPortSetRead(device, "setReadStr", str);
+    }
+
+    @SneakyThrows
+    @假如("串口设备{string}设置的读取数据为hex串{string}")
+    public void 串口设备设置的读取数据为hex串(String device, String hex) {
+        serialPortSetRead(device, "setReadHexStr", hex);
+    }
+
+    @SneakyThrows
     private void dnscanVerify(String devName, Map<String, String> command) {
         try (Socket socket = new Socket(lowerIp, 50000)) {
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -78,6 +90,17 @@ public class DeviceSteps {
 
     private String readLine(BufferedReader bufferedReader) throws IOException {
         return bufferedReader.readLine();
+    }
+
+    private void serialPortSetRead(String device, String method, String data) throws IOException {
+        try (Socket socket = new Socket(lowerIp, 50000)) {
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            writeLine(bufferedWriter, "serialPort");
+            writeLine(bufferedWriter, device);
+            writeLine(bufferedWriter, method);
+            writeLine(bufferedWriter, data);
+            bufferedWriter.flush();
+        }
     }
 
     private void serialPortVerify(String device, String hex) throws IOException {
