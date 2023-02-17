@@ -85,7 +85,7 @@ public class DeviceSteps {
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             writeLine(bufferedWriter, "serialPort");
             writeLine(bufferedWriter, device);
-            writeLine(bufferedWriter, "readAll");
+            writeLine(bufferedWriter, "getAllWrite");
             bufferedWriter.flush();
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
