@@ -97,8 +97,8 @@ dependencies {
     implementation("org.mock-server:mockserver-client-java:5.13.2")
     implementation "com.github.leeonky:jfactory:0.3.18"
     implementation "com.github.leeonky:jfactory-cucumber:0.1.21"
-    implementation "com.github.leeonky:DAL-java:0.3.12"
-    implementation "com.github.leeonky:DAL-extension-basic:0.0.8"
+    implementation "com.github.leeonky:DAL-java:0.3.19"
+    implementation "com.github.leeonky:DAL-extension-basic:0.0.12"
     implementation "com.github.leeonky:jfactory-repo-jpa:0.1.12"
     implementation "com.github.leeonky:jfactory-property-value:0.0.10"
     implementation "org.reflections:reflections:0.9.12"
@@ -112,7 +112,7 @@ dependencies {
     implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
 
     implementation group: 'com.github.kilianB', name: 'JImageHash', version: '3.0.0'
-    implementation 'com.github.leeonky:RESTful-cucumber:0.0.12'
+    implementation 'com.github.leeonky:RESTful-cucumber:0.0.18'
 }
 
 task cucumber(type: JavaExec) {
